@@ -4,7 +4,7 @@
 #cron:40 1 * * *
 openid=($(echo $rbcx | sed 's/&/ /g'))
 cj(){
-tmp=$(curl -sk -X POST -H "Host: smsp.epicc.com.cn" -H "Content-Type: application/json" -d '{"header":{"openid":"'${openid[$s]}'","comCode":"35000000","comId":"35000000","userName":"'$name'","agentCode":"0","token":"","userId":"picc-fuj","unionId":"'$unionid'"},"body":{"cmd":"queryactivitydetail","activityNo":"30000'$i'","memId":"","activityType":"1","transactionNo":"","isDifferWinningRate":""}}' "http://smsp.epicc.com.cn/WAS/recentActivtyApi/themeActivityNew")
+tmp=$(curl -sk -X POST -H "Host: smsp.epicc.com.cn" -H "Content-Type: application/json" -d '{"header":{"openid":"'${openid[$s]}'","comCode":"35000000","comId":"35000000","userName":"'$name'","agentCode":"0","token":"","userId":"picc-fuj","unionId":"'$unionid'"},"body":{"cmd":"queryactivitydetail","activityNo":"'$id'","memId":"","activityType":"1","transactionNo":"","isDifferWinningRate":""}}' "http://smsp.epicc.com.cn/WAS/recentActivtyApi/themeActivityNew")
 msg=$(echo "$tmp" | jq -r '.message')
 name=$(echo "$tmp" | jq -r '.data.activityName')
 jp=$(echo "$tmp" | jq -r '.data.giftName')
