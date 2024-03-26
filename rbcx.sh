@@ -8,7 +8,12 @@ tmp=$(curl -sk -X POST -H "Host: smsp.epicc.com.cn" -H "Content-Type: applicatio
 msg=$(echo "$tmp" | jq -r '.message')
 name=$(echo "$tmp" | jq -r '.data.activityName')
 jp=$(echo "$tmp" | jq -r '.data.giftName')
+if [[ "$jp" == *"很遗憾"* ]] || [[ "$jp" == *"null"* ]]; then
+echo "$s没中"
+else
 echo "$s $msg $name $jp"
+curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "content-type: application/json" -d '{"appToken":"'$apptoken'","content":"福建人保财险账号'$s'中了'$jp'","contentType":1,"topicIds":['$topicId'],"verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
+fi
 }
 for s in $(seq 0 1 $((${#openid[@]}-1)))
 do
