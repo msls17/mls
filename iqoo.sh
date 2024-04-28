@@ -1,5 +1,5 @@
 # new Env('IQOO社区');
-#by-莫老师，版本1.0
+#by-莫老师，版本1.1
 #微信小程序IQOO社区，抓包authorization，青龙设置变量名iqoo值为authorization，抓一次30天有效
 #cron:15 4 * * *
 token=($(echo $iqoo | sed 's/&/ /g'))
@@ -25,12 +25,14 @@ echo "........开始执行iqoo账号$s........"
 t="/api/v3/sign"
 l='{"from":""}'
 p
-if [ $(echo "$tmp" | jq -r '.Code') -ne 0 ]; then
+code=$(echo "$tmp" | jq -r '.Code')
+if [ $code -ne "-13006" ] && [ $code -ne "0" ]; then
 echo "ck可能失效，请重新抓包"
 curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"iqoo账号'$s'可能失效，请重新抓包","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
 else
 d
 tmp=$(curl -sk http://ililil.cn:66/api/yy.php)
+echo "$tmp"
 t="/api/v3/thread.create"
 l='{"title":"'$(echo $tmp | awk -F "," '{print $1}')'","categoryId":27,"content":{"text":"<p>'$(echo $tmp | awk -F "," '{print $2}')'</p>"},"position":{},"price":0,"freeWords":0,"attachmentPrice":0,"draft":0,"anonymous":0,"topicId":"","source":"","videoId":""}'
 p
