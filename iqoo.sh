@@ -1,7 +1,7 @@
 # new Env('IQOO社区');
-#by-莫老师，版本1.1
+#by-莫老师，版本1.2
 #微信小程序IQOO社区，抓包authorization，青龙设置变量名iqoo值为authorization，抓一次30天有效
-#cron:15 4 * * *
+#cron:15 6 * * *
 token=($(echo $iqoo | sed 's/&/ /g'))
 url=bbs-api.iqoo.com
 key=2618194b0ebb620055e19cf9811d3c13
@@ -31,6 +31,10 @@ echo "ck可能失效，请重新抓包"
 curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"iqoo账号'$s'可能失效，请重新抓包","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
 else
 d
+t="/api/v3/luck.draw"
+l='{}'
+p
+echo "$tmp" | jq -r '.Data.prize_name'
 tmp=$(curl -sk http://ililil.cn:66/api/yy.php)
 echo "$tmp"
 t="/api/v3/thread.create"
