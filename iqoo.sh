@@ -34,7 +34,7 @@ d
 t="/api/v3/luck.draw"
 l='{}'
 p
-echo "$tmp" | jq -r '.Data.prize_name'
+echo "抽奖$(echo "$tmp" | jq -r '.Data.prize_name')"
 tmp=$(curl -sk http://ililil.cn:66/api/yy.php)
 echo "$tmp"
 t="/api/v3/thread.create"
@@ -65,6 +65,13 @@ l='{"threadId":"'${tzid[$i]}'"}'
 p
 d
 done
+t="/api/v4/gift.activity"
+c='source=index'
+g
+t="/api/v3/user"
+c='userId='$(echo "$tmp" | jq -r '.Data.sys_prize_id')''
+g
+echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 fi
 wait
 done
