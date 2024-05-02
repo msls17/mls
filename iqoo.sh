@@ -69,7 +69,7 @@ t="/api/v4/gift.activity"
 c='source=index'
 g
 t="/api/v3/user"
-c='userId='$(echo "$tmp" | jq -r '.Data.sys_prize_id')''
+c='userId='$(echo "$tmp" | jq -r '.Data.giftActivityUser.user_id')''
 g
 echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 fi
