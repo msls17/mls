@@ -65,11 +65,8 @@ l='{"threadId":"'${tzid[$i]}'"}'
 p
 d
 done
-t="/api/v4/gift.activity"
-c='source=index'
-g
 t="/api/v3/user"
-c='userId='$(echo "$tmp" | jq -r '.Data.giftActivityUser.user_id')''
+c='userId='$(echo "" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')''
 g
 echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 fi
