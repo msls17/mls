@@ -1,7 +1,7 @@
 # new Env('IQOO社区');
 #by-莫老师，版本1.2
 #微信小程序IQOO社区，抓包authorization，青龙设置变量名iqoo值为authorization，抓一次30天有效
-#cron:15 6 * * *
+#cron:15 12 * * *
 token=($(echo $iqoo | sed 's/&/ /g'))
 url=bbs-api.iqoo.com
 key=2618194b0ebb620055e19cf9811d3c13
@@ -66,7 +66,7 @@ p
 d
 done
 t="/api/v3/user"
-c='userId='$(echo "" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')''
+c='userId='$(echo "${token[$s]}" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')''
 g
 echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 fi
