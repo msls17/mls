@@ -47,7 +47,7 @@ zqsj=($(echo "$tmp" | jq -r '.data.list[].activityTime'))
 for t in "${zqsj[@]}"
 do
 if [ "$(date -d "@$t" '+%Y-%m-%d')" == "$today" ]; then
-echo "账号$s$name$today已中签"
+echo "账号$i$name$today已中签"
 fi
 done
 url=/front-manager/api/get/channelId
@@ -61,7 +61,7 @@ activity=$(echo "$tmp" | jq -r '.data.id')
 url=/front-manager/api/customer/promotion/appoint
 body='{"activityId":'$activity',"channelId":'$chanid'}'
 getsign
-echo "账号$s$name预约$(echo "$tmp" | jq -r '.message')"
+echo "账号$i$name预约$(echo "$tmp" | jq -r '.message')"
 done
 wait
 done
