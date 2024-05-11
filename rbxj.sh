@@ -12,22 +12,6 @@ token[$s]=$(curl -sk -X GET -H "Host: $url" "https://$url/chicken-api/h5login?us
 done
 for s in $(seq 0 1 $((${#token[@]}-1)))
 do
-tmp=$(curl -sk -X GET -H "Host: $url" -H "Authorization: bearer${token[$s]}" "https://$url/chicken-api/p/chicken/listbook")
-noteid=($(echo "$tmp" | jq -r '.result.lottery[].noteId'))
-sttime=($(echo "$tmp" | jq -r '.result.lottery[].startTime' | awk -F " " '{print $1}'))
-for ((i=0; i<${#sttime[@]}; i++)); do
-if [ ${sttime[i]} = $time ]; then
-msg=$(curl -sk -X POST -H "Host: $url" -H "Authorization: bearer${token[$s]}" -d "" "https://$url/chicken-api/p/chicken/receivedlottery?noteId=${noteid[$i]}&LotteryType=shop" | jq -r '.message')
-km=$(curl -sk -X POST -H "Host: $url" -H "Authorization: bearer${token[$s]}" -d "" "https://$url/chicken-api/p/chicken/receivedCarNo?noteId=${noteid[$i]}&LotteryType=shop" | jq -r '.message')
-echo "账号$s，ID:${noteid[$i]}卡密$km"
-printf "账号$s，ID:${noteid[$i]}卡密$km换行" >>rbxj.log
-fi
-done
-done
-curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "content-type: application/json" -d '{"appToken":"'$apptoken'","content":"'$(cat rbxj.log | sed 's/换行/\\n/g')'","summary":"人保小鸡兑换成功","contentType":1,"topicIds":['$topicId'],"verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-fi
-for s in $(seq 0 1 $((${#token[@]}-1)))
-do
 tmp=$(curl -sk -X GET -H "Host: $url" -H "Authorization: bearer${token[$s]}" "https://$url/chicken-api/p/chicken/userinfo")
 per=$(echo "$tmp"  | jq -r '.result.eggPer')
 quantity=$(echo "$tmp"  | jq -r '.result.feedfoodQuantity')
