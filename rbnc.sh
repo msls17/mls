@@ -1,7 +1,7 @@
 # new Env('人保农场');
 #by-莫老师，版本1.3
 #微信小程序picc爱心农场nongchang.maxrocky.com，抓包skey，青龙创建变量rbnc，值为skey
-#cron:25 * * * *
+#cron:25 */3 * * *
 ck=($(echo $rbnc | sed 's/&/ /g'))
 url=nongchang.maxrocky.com
 buy(){
@@ -47,7 +47,7 @@ echo "账号$s执行任务$(curl -sk -X POST -H "Host: $url" -H "content-type: a
 sleep 1s
 done
 fi
-if [ "$(date +%H)" -eq 1 ]; then
+if [ "$(date +%H)" -lt 4 ]; then
 for i in $(seq $lands)
 do
 echo "账号$s浇水$(curl -sk -X POST -H "Host: $url" -H "content-type: application/json" -d '{"type":"wateringCrops","skey":"'${ck[$s]}'","lid":"'$i'"}' "https://$url/index.php?s=index%2Findex%2FsetUserLog" | jq -r '.errMsg')"
