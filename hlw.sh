@@ -1,6 +1,6 @@
 #!/bin/bash
 # new Env('wx-葫芦娃茅台');
-#by-莫老师，版本1.3
+#by-莫老师，版本1.4
 #cron:5 10 * * *
 host=gw.huiqunchina.com
 wxappid=(wxded2e7e6d60ac09d@偲源惠购 wx61549642d715f361@贵旅优品 wx613ba8ea6a002aa8@空港乐购 wx936aa5357931e226@航旅黔购 wx624149b74233c99a@遵航出山 wx5508e31ffe9366b8@贵盐黔品 wx821fb4d8604ed4d6@乐旅商城 wxee0ce83ab4b26f9c@驿路黔寻)
@@ -14,7 +14,7 @@ if [ $? -eq 0 ]; then
 echo "未成功获取到code，正尝试重新获取"
 getcode
 else
-echo "获取code失败，萝卜未启动"
+echo "获取code失败，无法访问code服务器"
 curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"获取code失败，请检查code服务器是否正常","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
 exit
 fi
@@ -57,21 +57,19 @@ zqsj=($(echo "$tmp" | jq -r '.data.list[].activityTime'))
 for t in "${zqsj[@]}";do
 if [ "$(date -d "@$t" '+%Y-%m-%d')" == "$today" ]; then
 echo "账号$i$name$today已中签"
+else
+echo "账号$i$name$today未中签"
 fi
 done
 fi
 if [ "$edtime" = "$today" ]; then
-url=/front-manager/api/customer/promotion/checkMnsAuth
-body='"channelId":'$chanid'}'
-getsign
-if [[ "$tmp" == *"验证码"* ]]; then
-curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"'$(echo "$tmp" | jq -r '.message')'","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-else
 url=/front-manager/api/customer/promotion/appoint
 body='{"activityId":'$activity',"channelId":'$chanid'}'
 getsign
-echo "账号$i$name$(echo "$tmp" | jq -r '.message')"
+if [[ "$tmp" == *"验证码"* ]]; then
+curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"'$(echo "$tmp" | jq -r '.message' | sed 's/\"//g')'","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
 fi
+echo "账号$i$name$(echo "$tmp" | jq -r '.message')"
 fi
 done
 else
