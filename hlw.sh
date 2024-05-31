@@ -54,11 +54,12 @@ url=/front-manager/api/customer/promotion/queryLotteryRecord
 body='{"page":{"pageNo":1,"pageSize":20}}'
 getsign
 zqsj=($(echo "$tmp" | jq -r '.data.list[].activityTime'))
+if [ -z "${zqsj[@]}" ]; then
+echo "账号$i$name$today未中签"
+fi
 for t in "${zqsj[@]}";do
 if [ "$(date -d "@$t" '+%Y-%m-%d')" == "$today" ]; then
 echo "账号$i$name$today已中签"
-else
-echo "账号$i$name$today未中签"
 fi
 done
 fi
