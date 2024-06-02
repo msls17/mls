@@ -44,7 +44,7 @@ tmp=$(curl -sk -X POST -H "Host: $url" -H "content-type: application/json" -d '{
 sleep 1s
 level=$(echo "$tmp" | perl -n -e 'print "$&\n" if /"level":\K\d+/')
 lands=$(($level+1))
-if [ $lands -gt 9 ]; then
+if [ $lands -ge 9 ]; then
 lands=9
 fi
 land=($(echo "$tmp" | sed 's/,/\n/g' | grep "landId" | awk -F ":" '{print $2}'))
@@ -64,6 +64,7 @@ echo "账号$s浇水$(curl -sk -X POST -H "Host: $url" -H "content-type: applica
 sleep 1s
 done
 echo "账号$s购买狗💩$(curl -sk -X POST -H "Host: $url" -H "content-type: application/json" -d '{"skey":"'${ck[$s]}'","type":"decate","buyId":12,"num":2}' "https://$url/index.php?s=index%2Findex%2FbuyGoods" | jq -r '.errMsg')"
+echo "账号$s完成成就$(curl -sk -X POST -H "Host: $url" -H "content-type: application/json" -d '{"skey":"'${ck[$s]}'"}' "https://$url/index.php?s=index%2Findex%2FgetUserDonateExtraLog" | jq -r '.errMsg')"
 sleep 1s
 for i in BrowseYouyang CourtesyPets awardShare dogfood harvestFruitShare shareTimeline sign LovePets
 do
