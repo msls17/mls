@@ -1,7 +1,7 @@
 #!/bin/bash
 # new Env('华为商城');
 #抓包euid，变量名yylx，多账号创建多个或&分割
-#by-莫老师，版本1.0
+#by-莫老师，版本1.1
 #cron:20 6 * * *
 zh=($(echo $yylx | sed 's/&/ /g'))
 url=openapi.vmall.com
@@ -19,4 +19,5 @@ echo "正在完成浏览任务"
 sleep 11
 curl -sk -X POST -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Content-Type: application/json; charset=utf-8" -H "Host: $url" -d '{"country":"CN","activityCode":"'$activity'","taskCode":"'$i'","lang":"zh-CN","portal":"3","version":"12403301"}' "https://$url/ams/task/receiveTaskReward" | jq -r '.msg'
 done
+echo "账号$s当前积分$(curl -sk -X POST -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Content-Type: application/json; charset=utf-8" -H "Host: $url" -d '{"country":"CN","portal":"3","lang":"zh-CN","version":"12403301"}' "https://$url/mcp/queryUserPointBalanceDetail" | jq -r '.pointBlance')"
 done
