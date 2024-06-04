@@ -15,8 +15,9 @@ activity=$(echo "$tmp" | jq -r '.pageData.DH0002213[].activityCode')
 task=($(echo "$tmp" | jq -r '.pageData.DH0002213[].taskActivityTaskInfoList[].taskCode'))
 for i in ${task[@]};do
 curl -sk -X GET -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Host: $url" "https://$url/sg/activity/attendTask?taskCode=$i&activityCode=$activity&portal=3&lang=zh_CN&country=CN&version=1" | jq -r '.success'
-echo "正在完成浏览任务"
-sleep 11
+done
+tmp=$(curl -sk -X GET -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Host: $url" "https://$url/sg/content/realtime/getPageDataSource?country=CN&portal=3&lang=zh_CN&filterType=2&version=1&dataSourceList=DH0002213")
+for i in ${task[@]};do
 curl -sk -X POST -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Content-Type: application/json; charset=utf-8" -H "Host: $url" -d '{"country":"CN","activityCode":"'$activity'","taskCode":"'$i'","lang":"zh-CN","portal":"3","version":"12403301"}' "https://$url/ams/task/receiveTaskReward" | jq -r '.msg'
 done
 echo "账号$s当前积分$(curl -sk -X POST -H "Cookie: euid=$ck" -H "CsrfToken: $csrf" -H "Content-Type: application/json; charset=utf-8" -H "Host: $url" -d '{"country":"CN","portal":"3","lang":"zh-CN","version":"12403301"}' "https://$url/mcp/queryUserPointBalanceDetail" | jq -r '.pointBlance')"
