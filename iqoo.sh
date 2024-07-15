@@ -1,15 +1,14 @@
 # new Env('IQOO社区');
-#by-莫老师，版本1.4
+#by-莫老师，版本1.5
 #微信小程序IQOO社区，抓包authorization，青龙设置变量名iqoo值为authorizatio@要兑换的商品id，抓一次30天有效
 #600356，哔哩哔哩 600336，肯德基10元 600335，必胜客20 600334，Qq音乐 600332，腾讯视频
 #cron:55 14 * * *
-token=($(echo $iqoo | sed 's/&/ /g' | awk -F "@" '{print $1}'))
-dh=($(echo $iqoo | sed 's/&/ /g' | awk -F "@" '{print $2}'))
+iqoos=($(echo $iqoo | sed 's/&/ /g'))
 url=bbs-api.iqoo.com
 key=2618194b0ebb620055e19cf9811d3c13
 dh(){
 t="/api/v3/exchange"
-l='{"userId":'$(echo "${token[$s]}" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'${dh[$s]}',"imei":""}'
+l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$dh',"imei":""}'
 p
 if [ $tmp == *"频繁"* ]; then
 echo "操作频繁重试"
@@ -23,17 +22,18 @@ p(){
 a=$(date '+%s')
 c=""
 r=$(echo -n "POST&$t&$c&$l&appid=1002&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
-tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: ${token[$s]}" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
+tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: $token" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
 }
 g(){
 a=$(date '+%s')
 l=""
 r=$(echo -n "GET&$t&$c&$l&appid=1002&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
-tmp=$(curl -sk -X GET -H "Host: $url" -H "authorization: ${token[$s]}" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" "https://$url$t?$c")
+tmp=$(curl -sk -X GET -H "Host: $url" -H "authorization: $token" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" "https://$url$t?$c")
 }
-for s in $(seq 0 1 $((${#token[@]}-1)));do
+for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
+token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
 echo "........开始执行iqoo账号$s........"
-ckyxq=$((($(echo "${token[$s]}" | awk -F "." '{print $2}' | base64 -d | jq -r '.exp')-$(date +%s))/3600))
+ckyxq=$((($(echo "$token" | awk -F "." '{print $2}' | base64 -d | jq -r '.exp')-$(date +%s))/3600))
 if [ "$ckyxq" -lt "48" ]; then
 echo "ck还有$ckyxq小时失效，请重新抓包"
 curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"iqoo账号'$s'还有'$ckyxq'小时失效，请及时更新ck","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
@@ -87,7 +87,7 @@ d
 sleep 1
 done
 t="/api/v3/user"
-c='userId='$(echo "${token[$s]}" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')''
+c='userId='$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')''
 g
 echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 wait
@@ -96,7 +96,9 @@ if [ $(date +'%u') -eq 3 ]; then
 sm=$(($(date -d 'tomorrow 15:00:00' +%s)-$(date +%s)-86400))
 echo "稍等$sm秒"
 sleep $sm
-for s in $(seq 0 1 $((${#token[@]}-1)));do
+for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
+token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
+dh=$(echo ${iqoos[$s]} | awk -F "@" '{print $2}')
 dh
 d
 done
