@@ -34,10 +34,9 @@ for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
 token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
 echo "........开始执行iqoo账号$s........"
 ckyxq=$((($(echo "$token" | awk -F "." '{print $2}' | base64 -d | jq -r '.exp')-$(date +%s))/3600))
-if [ "$ckyxq" -lt "48" ]; then
+if [ "$ckyxq" -lt "0" ]; then
 echo "ck还有$ckyxq小时失效，请重新抓包"
 curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"iqoo账号'$s'还有'$ckyxq'小时失效，请及时更新ck","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-elif [ "$ckyxq" -lt "0" ]; then
 echo "账号已失效，请重新抓包"
 continue
 fi
