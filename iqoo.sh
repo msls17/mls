@@ -8,9 +8,10 @@ url=bbs-api.iqoo.com
 key=2618194b0ebb620055e19cf9811d3c13
 dh(){
 t="/api/v3/exchange"
-l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$dh',"imei":""}'
+l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$dhid',"imei":""}'
 p
-if [ $tmp == *"频繁"* ]; then
+echo "$tmp"
+if [ "$tmp" == *"频繁"* ]; then
 echo "操作频繁重试"
 dh
 fi
@@ -97,7 +98,7 @@ echo "稍等$sm秒"
 sleep $sm
 for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
 token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
-dh=$(echo ${iqoos[$s]} | awk -F "@" '{print $2}')
+dhid=$(echo ${iqoos[$s]} | awk -F "@" '{print $2}')
 dh
 d
 done
