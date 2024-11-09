@@ -3,7 +3,7 @@
 #cron:5 1 * * *
 #打开https://e.picc.com/piccapp/install/register.html?app=1&uuIdFlag=2a05f9fa-8下载app，然后用微信登陆抓包，抓thirdPartyId和deviceid的值，青龙设置变量名zgrbck，值为thirdPartyId@deviceid。一次抓包永久有效
 url=zgrb.epicc.com.cn
-url2=mp.picclife.cn
+url2=dop.picc.com.cn
 url3=piccapp-2024khj.maxrocky.com
 zh=($(echo $zgrbck | sed 's/&/ /g'))
 getsign(){
@@ -18,10 +18,10 @@ for s in $(seq 0 1 $((${#zh[@]}-1)))
 do
 openid=$(echo "${zh[$s]}" | awk -F "@" '{print $1}')
 device=$(echo "${zh[$s]}" | awk -F "@" '{print $2}')
-ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"261","appVersion":"6.22.2"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"23049RAD8C","osType":"android","osVersion":"13","romType":"2","romVersion":"0"},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | sed 's/\n//g' | sed 's/ //g' | grep "Authorization" | awk -F ":" '{print $2}' | awk -F ";" '{print $1}')
+ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"285","appVersion":"6.23.12"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"23049RAD8C","osType":"android","osVersion":"13","romType":"2","romVersion":"0"},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | sed 's/\n//g' | sed 's/ //g' | grep "Authorization" | awk -F ":" '{print $2}' | awk -F ";" '{print $1}')
 rm -rf zgrb.log
 echo "........中国人保账号$s........"
-lj=$(curl -sik -X GET -H "Host: $url" -H "Cookie: w_a_t=$ck" "https://$url/G-OPEN/oauth2/authorize/v1?client_id=EC8XhCVQNN5dha8huaRZEC1v&scope=auth_user&response_type=code&redirect_uri=https%3A%2F%2F$url2%2Fdop%2Fscoremall%2Fuser%2FappLoginCallback%3FafterLoginRedirectUrl%3Dhttps%2525253A%2525252F%2525252F$url2%2525252Fdop%2525252Fscoremall%2525252Fmall%2525252F%25252523%2525252FdailyAttendance%2525253Fapply%2525253Dapp" | grep "Location" | awk -F " " '{print $2}')
+lj=$(curl -sik -X GET -H "Host: piccapp.picc.com.cn" -H "Cookie: w_a_t=$ck" "https://piccapp.picc.com.cn/G-OPEN/oauth2/authorize/v1?client_id=7nbv5z4zS86jhGDCt5XuwfWI&scope=auth_user&response_type=code&redirect_uri=https%3A%2F%2F$url2%2Fdop%2Fscoremall%2Fuser%2FappLoginCallback%3FafterLoginRedirectUrl%3Dhttps%2525253A%2525252F%2525252F$url2%2525252Fdop%2525252Fscoremall%2525252Fmall%2525252F%25252523%2525252FdailyAttendance%2525253Fapply%2525253Dapp" | grep "Location" | awk -F " " '{print $2}')
 token=$(curl -sik -X GET -H "Host: $url2" "$lj" | grep "app-token" | awk -F "app-token=" '{print $2}' | awk -F ";" '{print $1}')
 if [ -z "$token" ]; then
 echo "账号$s登录签到有礼失败，可能是没有人脸认证，请打开app进行实名认证"
