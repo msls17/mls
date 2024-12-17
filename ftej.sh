@@ -1,5 +1,5 @@
 # new Env('福田e家');
-#by-莫老师，版本1.1
+#by-莫老师，版本1.2
 #青龙创建变量ftej，值为账号@密码，100积分等于1元，平均一天约100分
 #cron:10 1 * * *
 zh=($(echo $ftej | sed 's/&/ /g'))
@@ -20,13 +20,17 @@ if [ $(expr length "$content") -lt 10 ]; then
 content=福田汽车veryveryverygood
 fi
 tzid=$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"content":"'$content'","postType":1,"topicIdList":[186],"uploadFlag":3,"title":"","urlList":[]}' "https://$url/ehomes-new/ehomesCommunity/api/post/addJson2nd" | jq -r '.data.postId')
+sleep $((RANDOM % 60))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/bonus/signActivity2nd" >/dev/null
+sleep $((RANDOM % 60))
 curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Host: $url" -H "app-key: $appkey" -d '{"safeEnc":'$(($(date '+%s%3N')-20220202))',"activity":"","tel":"'$phone'","id":"33","source":"APP","memberId":"'$code'"}' "https://$url/ehomes-new/homeManager/api/bonus/addIntegralForShare" >/dev/null
+sleep $((RANDOM % 60))
 gzid=$((RANDOM + 8010000))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"behavior":"1","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
-curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"behavior":"2","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
-curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"postId":'$tzid'}' "https://$url/ehomes-new/ehomesCommunity/api/mine/delete" >/dev/null
-echo "$phone任务运行成功，稍等一会儿积分到账"
 sleep $((RANDOM % 60))
+curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"behavior":"2","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
+sleep $((RANDOM % 60))
+curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"postId":'$tzid'}' "https://$url/ehomes-new/ehomesCommunity/api/mine/delete" >/dev/null
+sleep $((RANDOM % 60))
+echo "$phone任务运行成功，稍等一会儿积分到账"
 echo "福田e家帐号$phone目前积分$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/Member/findMemberPointsInfo" | jq -r '.data.pointValue')"
-done
