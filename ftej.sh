@@ -34,3 +34,4 @@ curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: applica
 sleep $((RANDOM % 60))
 echo "$phone任务运行成功，稍等一会儿积分到账"
 echo "福田e家帐号$phone目前积分$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $apptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/Member/findMemberPointsInfo" | jq -r '.data.pointValue')"
+done
