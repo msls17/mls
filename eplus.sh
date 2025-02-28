@@ -1,5 +1,5 @@
 # new Env('e生活plus');
-#by-莫老师，版本1.0
+#by-莫老师，版本1.1
 #福建工行信用卡用户才可以，每周四周五抢立减金
 #cron:0 10 * * 4,5
 appid=wxe5688eab75967e0a
@@ -27,9 +27,7 @@ do
 echo "账号$s兑换奖品：$(curl -sk -X POST -H "Host: $url" -H "x-token: $token" -H "content-type: application/x-www-form-urlencoded;charset=UTF-8" -d "" "https://$url/activity/icbc/tuesday/v1/receiveEquity.do?type=${id[$i]}&mobile=$eplus" | jq -r '.msg')"
 done
 elif [ "$(date +%u)" -eq 5 ]; then
-id=($(curl -sk -X POST -H "Host: $url" -H "x-token: $token" -H "content-type: application/x-www-form-urlencoded;charset=UTF-8" -d "" "https://$url/activity/icbc/friday/v1/checkEquity.do" | jq '.body.product[].type'))
-for i in $(seq 0 1 $((${#id[@]}-1)))
-do
+for i in 2006 2007 2002;do
 echo "账号$s兑换奖品：$(curl -sk -X POST -H "Host: $url" -H "x-token: $token" -H "content-type: application/x-www-form-urlencoded;charset=UTF-8" -d "" "https://$url/activity/icbc/friday/v1/receiveEquity.do?type=${id[$i]}&mobile=$eplus" | jq -r '.msg')"
 done
 else
