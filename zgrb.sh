@@ -1,5 +1,5 @@
 # new Env('中国人保');
-#by-莫老师，版本2.1
+#by-莫老师，版本2.2
 #cron:5 1 * * *
 #打开https://e.picc.com/piccapp/install/register.html?app=1&uuIdFlag=2a05f9fa-8下载app，然后用微信登陆抓包，抓thirdPartyId和deviceid的值，青龙设置变量名zgrbck，值为thirdPartyId@deviceid。一次抓包永久有效
 url=zgrb.epicc.com.cn
@@ -50,20 +50,5 @@ curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/
 fi
 jf=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d "{}" "https://$url2/dop/scoremall/score/internal/scoreAccount/queryMyScoreAccount" | jq -r '.result.totalScore')
 echo "账号$s当前积分$jf"
-for i in $(seq $(($jf/2500)))
-do
-dh=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d '{"goodsList":[{"count":1,"goodsId":"946008294354575362"}],"requestId":'$(date '+%s%3N')'}' "https://$url2/dop/scoremall/order/ut/order/createTempOrder" | jq -r '.result.id')
-ddh=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d '{"id":"'$dh'"}' "https://$url2/dop/scoremall/order/ut/order/submitOrder" | jq -r '.result.orderId')
-km=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d '{"id":"'$ddh'"}' "https://$url2/dop/scoremall/order/orderInfo/queryClientOrderDetails" | jq -r '.result.virtualOrderCardInfoDTO.cardPsss')
-echo "账号$s，第$i次兑换10E卡：$km"
-if [ "$km" = "null" ]; then
-echo "兑换失败可能库存不足或未实名"
-else
-printf "账号$s，第$i次兑换10E卡：$km换行" >>zgrb.log
-fi
-done
-if [ -f "zgrb.log" ]; then
-curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "content-type: application/json" -d '{"appToken":"'$apptoken'","content":"'$(cat zgrb.log | sed 's/换行/\\n/g')'","summary":"中国人保账号'$s'本次兑换清单","contentType":1,"topicIds":['$topicId'],"verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-fi
 fi
 done
