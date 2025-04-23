@@ -32,20 +32,6 @@ curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: applica
 sleep $((RANDOM % 60))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1,"postId":'$tzid'}' "https://$url/ehomes-new/ehomesCommunity/api/mine/delete" >/dev/null
 sleep $((RANDOM % 60))
-#临时活动
-curl -sk -X POST -H "Host: $url" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -d "encryptMemberId=$code" "https://czyl.foton.com.cn/shareCars/c250401/getShare.action" | jq -r '.msg'
-num=$(curl -sk -X POST -H "Host: $url" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -d "encryptMemberId=$code" "https://czyl.foton.com.cn/shareCars/c250401/getDrawNum.action" | jq -r '.data.remainNum')
-for l in $(seq $num);do
-award=$(curl -sk -X POST -H "Host: $url" -H "Accept: application/json, text/javascript, */*; q=0.01" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -d "encryptMemberId=$code&activityNum=250401" "https://czyl.foton.com.cn/shareCars/c250401/luckyDraw.action" | jq -r '.msg')
-echo "$phone第$l次抽奖$award"
-if [ "$award" = "很遗憾，未中奖！" ]; then
-sleep 5
-else
-curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"福田e家'$phone'中奖了'$award'","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-fi
-sleep 5
-done
-#临时活动
 echo "$phone任务运行成功，稍等一会儿积分到账"
 echo "福田e家帐号$phone目前积分$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-20220202))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/Member/findMemberPointsInfo" | jq -r '.data.pointValue')"
 echo "############"
