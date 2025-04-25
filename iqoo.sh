@@ -1,14 +1,15 @@
 # new Env('IQOO社区');
-#by-莫老师，版本1.5
-#微信小程序IQOO社区，抓包authorization，青龙设置变量名iqoo值为authorizatio@要兑换的商品id，抓一次30天有效
-#600356，哔哩哔哩 600336，肯德基10元 600335，必胜客20 600334，Qq音乐 600332，腾讯视频
+#by-莫老师，版本1.8
+#IQOO社区app，抓包登录链接https://usrsys.vivo.com.cn/usrlg/v5/login/manual，变量名iqoo，值为请求体中全部内容，多账号@分隔
+#600356，哔哩哔哩 600336，肯德基10元 600335，必胜客20 600334，Qq音乐 600332，腾讯视频，以上数字是对应商品的id，设置变量名为iqoodhid，值为以上数字中的一个
 #cron:55 14 * * *
-iqoos=($(echo $iqoo | sed 's/&/ /g'))
 url=bbs-api.iqoo.com
-key=2618194b0ebb620055e19cf9811d3c13
+#wxkey=2618194b0ebb620055e19cf9811d3c13
+key=1aa0fe59f218c000e3bd533c33e8f27a
+zh=($(echo $iqoo | sed 's/@/ /g'))
 dh(){
 t="/api/v3/exchange"
-l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$dhid',"imei":""}'
+l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$iqoodhid',"imei":""}'
 p
 echo "$tmp"
 if [ "$tmp" == *"频繁"* ]; then
@@ -22,25 +23,20 @@ echo "$tmp" | jq -r '.Meta.tips[].message'
 p(){
 a=$(date '+%s')
 c=""
-r=$(echo -n "POST&$t&$c&$l&appid=1002&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
-tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: $token" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
+r=$(echo -n "POST&$t&$c&$l&appid=1001&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
+tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: Bearer $token" -H "sign: IQOO-HMAC-SHA256 appid=1001,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
 }
 g(){
 a=$(date '+%s')
 l=""
-r=$(echo -n "GET&$t&$c&$l&appid=1002&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
-tmp=$(curl -sk -X GET -H "Host: $url" -H "authorization: $token" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" "https://$url$t?$c")
+r=$(echo -n "GET&$t&$c&$l&appid=1001&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
+tmp=$(curl -sk -X GET -H "Host: $url" -H "authorization: Bearer $token" -H "sign: IQOO-HMAC-SHA256 appid=1002,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" "https://$url$t?$c")
 }
-for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
+start(){
+iqoos=($(cat iqoo | sed 's/\n/ /g'))
+for s in "${!iqoos[@]}";do
 token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
 echo "........开始执行iqoo账号$s........"
-ckyxq=$((($(echo "$token" | awk -F "." '{print $2}' | base64 -d | jq -r '.exp')-$(date +%s))/3600))
-if [ "$ckyxq" -lt "0" ]; then
-echo "ck还有$ckyxq小时失效，请重新抓包"
-curl -sk -X POST -H "Host: wxpusher.zjiecode.com" -H "Content-Type: application/json" -d '{"appToken":"'$apptoken'","content":"iqoo账号'$s'还有'$ckyxq'小时失效，请及时更新ck","contentType":1,"topicIds":['$topicId'], "url":"https://wxpusher.zjiecode.com","verifyPay":false}' "https://wxpusher.zjiecode.com/api/send/message" | jq -r '.msg'
-echo "账号已失效，请重新抓包"
-continue
-fi
 t="/api/v3/sign"
 l='{"from":""}'
 p
@@ -49,7 +45,7 @@ t="/api/v3/luck.draw"
 l='{}'
 p
 echo "抽奖$(echo "$tmp" | jq -r '.Data.prize_name')"
-tmp=$(curl -sk http://ililil.cn:66/api/yy.php)
+tmp=$(curl -sk http://ililil.cn:88/api/yy.php)
 echo "$tmp"
 sleep 1
 t="/api/v3/thread.create"
@@ -92,13 +88,59 @@ g
 echo "当前积分$(echo "$tmp" | jq -r '.Data.score')"
 wait
 done
+}
+getlogin(){
+rm -rf iqoo
+for s in "${!zh[@]}";do
+tmp=$(curl -sk -X POST -H "Content-Type: application/x-www-form-urlencoded;charset=utf-8" -H "Host: usrsys.vivo.com.cn" -d "${zh[$s]}" "https://usrsys.vivo.com.cn/usrlg/v5/login/manual")
+openid=$(echo "$tmp" | jq -r '.data.openid')
+vivotoken=$(echo "$tmp" | jq -r '.data.vivotoken')
+u=$(echo "$tmp" | jq -r '.data.phonenum')
+echo "-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDlxzUDWEe8wfk9ionjtodSmyl7
+V0UOeQio94+zsI4DQaZmV0dnJ3EAk+1Gf5h0otMtkS/7XNVSUIG+Q6Xk34RZblaz
+sDL+UbpR/dAMWr3tTXYsdZj+EiJfQKn72rdLvTPlDi//ieDh6GwnG3MrYQbA2y9X
+CQsHfW1D2/ggIPgTIwIDAQAB
+-----END PUBLIC KEY-----" > vivo.pem
+echo -n '{"requestTime":'$(date +%s)',"openid":"'$openid'","nickname":"'$u'","mobile":"'$u'","vivotoken":"'$vivotoken'","versionCode":70300}' > plaintext.dat
+TMP_DIR=$(mktemp -d)
+split -b 117 plaintext.dat "$TMP_DIR/block_"
+for block in "$TMP_DIR"/block_*; do
+openssl pkeyutl -encrypt -pubin -inkey vivo.pem -pkeyopt rsa_padding_mode:pkcs1 -in "$block" -out "$block.enc" || exit 1
+done
+data=$(cat "$TMP_DIR"/*.enc | base64 -w 0 | sed 's/=/\\u003d/g')
+rm -rf "$TMP_DIR" plaintext.dat
+t="/api/v3/users/vivo/app"
+l='{"data":"'$data'","channel":1}'
+p
+token=$(echo "$tmp" | jq -r '.Data.accessToken')
+if [ -z "$token" ]; then
+echo "$u登录失败"
+else
+echo "$u登陆成功"
+echo "$token" >>iqoo
+fi
+done
+}
+if [ ! -f "iqoo" ]; then
+getlogin
+fi
+token=$(head -n 1 iqoo)
+t="/api/v3/user?userId=1510446"
+c='userId=1510446'
+g
+if [ "$tmp" == *"接口调用成功"* ]; then
+start
+else
+getlogin
+start
+fi
 if [ $(date +'%u') -eq 3 ]; then
 sm=$(($(date -d 'tomorrow 15:00:00' +%s)-$(date +%s)-86400))
 echo "稍等$sm秒"
 sleep $sm
-for s in $(seq 0 1 $((${#iqoos[@]}-1)));do
+for s in "${!iqoos[@]}";do
 token=$(echo ${iqoos[$s]} | awk -F "@" '{print $1}')
-dhid=$(echo ${iqoos[$s]} | awk -F "@" '{print $2}')
 dh
 d
 done
