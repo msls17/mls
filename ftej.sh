@@ -15,7 +15,7 @@ tmp=$(curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Hos
 code=$(echo $tmp | jq -r '.data.memberComplexCode')
 uid=$(echo $tmp | jq -r '.data.uid')
 memberid=$(echo $tmp | jq -r '.data.memberID')
-content=$(curl -sk http://ililil.cn:66/api/yy.php | awk -F "," '{print $2}')
+content=$(curl -sk http://ililil.cn:88/api/yy.php | awk -F "," '{print $2}')
 if [ $(expr length "$content") -lt 10 ]; then
 content=福田汽车veryveryverygood
 fi
