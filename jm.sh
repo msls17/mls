@@ -13,8 +13,8 @@ tmp=$(echo "$(curl -sk -X POST -H "Host: $url" -H "user-agent: Mozilla/5.0 (Linu
 }
 zy(){
 userid=$(curl -sk -X POST  -H "content-type: application/json" -H "Host: $url" -d '{"action":"pet.user.app.granary.getDetailV2","version":"5.21.3","appName":"AppPetStray","from":"pet","appScene":2000,"appTraceId":"","systemCode":"Mi4","supportFunctions":[],"latitude":0,"longitude":0,"mobileVersion":"2.0.5","mobileModel":"OnePlus PJE110","mobileSystem":"14","systemPlatform":"Android","ticket":"'$ticket'","token":"'$token'"}' "https://$url/api/pet.user.app.granary.getDetailV2" | jq -r '.data.userinfo.id')
-for i in $(seq 100); do
-if [ "$zynum" -gt 200 ]; then
+for i in $(seq 22); do
+if [ "$num" = "null" ]; then
 echo "今日收取🐾已达上限"
 break
 fi
