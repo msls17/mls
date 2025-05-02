@@ -1,7 +1,7 @@
 # new Env('IQOO社区');
-#by-莫老师，版本1.8
+#by-莫老师，版本1.9
 #IQOO社区app，抓包登录链接https://usrsys.vivo.com.cn/usrlg/v5/login/manual，变量名iqoo，值为请求体中全部内容，多账号@分隔
-#600356，哔哩哔哩 600336，肯德基10元 600335，必胜客20 600334，Qq音乐 600332，腾讯视频，以上数字是对应商品的id，设置变量名为iqoodhid，值为以上数字中的一个
+#600356，哔哩哔哩 600336，肯德基10元 600335，必胜客20 600334，Qq音乐 600332，腾讯视频，以上数字是秒速星期三对应商品的id，设置变量名为iqoodhid，值为以上数字中的一个，如不需要兑换就不要填写
 #cron:55 14 * * *
 url=bbs-api.iqoo.com
 #wxkey=2618194b0ebb620055e19cf9811d3c13
@@ -12,8 +12,9 @@ t="/api/v3/exchange"
 l='{"userId":'$(echo "$token" | awk -F "." '{print $2}' | awk -F "." '{print $1}' | base64 -d 2>/dev/null | jq -r '.sub')',"id":'$iqoodhid',"imei":""}'
 p
 echo "$tmp"
-if [ "$tmp" == *"频繁"* ]; then
+if [ ''$tmp'' == *"频繁"* ]; then
 echo "操作频繁重试"
+sleep 1
 dh
 fi
 }
@@ -24,7 +25,7 @@ p(){
 a=$(date '+%s')
 c=""
 r=$(echo -n "POST&$t&$c&$l&appid=1001&timestamp=$a" | openssl dgst -sha256 -hmac "$key" -binary | openssl base64)
-tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: Bearer $token" -H "sign: IQOO-HMAC-SHA256 appid=1001,timestamp=$a,signature=$r" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
+tmp=$(curl -sk -X POST -H "Host: $url" -H "authorization: Bearer $token" -H "sign: IQOO-HMAC-SHA256 appid=1001,timestamp=$a,signature=$r" -H "content-nonce: v9a8+5QzSygkuL99Pn8P0oFHR36oxLgCqQzr7bHw5+T18HqRwiwjCcHzWk2lTOFwoTd/YaCdltI/HddfkSbE8Hs0X6cQgDvUuEh34c6HdTHS798fDnA5vo69c3jkX1PtazLhMzSvaWY6XgE0OspI6ZfGGW7RsnDgH0VFeY0DB90=" -H "x-platform: mini" -H "content-type: application/json" -d ''$l'' "https://$url$t")
 }
 g(){
 a=$(date '+%s')
@@ -67,7 +68,6 @@ for i in $(seq 2);do
 t="/api/v3/view.count"
 c='threadId='${tzid[$i]}'&type=0'
 g
-d
 sleep 1
 done
 for i in $(seq 4);do
