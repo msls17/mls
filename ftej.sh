@@ -42,15 +42,23 @@ phone=$(echo ${zh[$s]} | awk -F "@" '{print $1}')
 pass=$(echo ${zh[$s]} | awk -F "@" '{print $2}')
 safe=$(curl -sk -X POST -H "content-type: application/json; charset=utf-8" -H "channel: 1" -H "host: $url" -d '{"deviceType":1}' "https://$url/ehomes-new/pkHome/version/getVersion" | jq -r '.data.safeKey')
 tmp=$(curl -sk -X POST -H "content-type: application/json; charset=utf-8" -H "channel: 1" -H "host: $url" -d '{"memberId":"","memberID":"","mobile":"","token":"'$pkt'","vin":"","safeEnc":'$(($(date '+%s%3N')-$safe))',"name":"'$phone'","password":"'$pass'","position":"","deviceId":"","deviceBrand":"","brandName":"","deviceType":"0","versionCode":"21","versionName":"V1.1.16"}' "https://$url/ehomes-new/pkHome/api/user/getLoginMember2nd")
+if [[ "$tmp" == *"密码错误"* ]]; then
+echo "$phone皮卡生活登录失败"
+else
 pkcode=$(echo $tmp | jq -r '.data.memberComplexCode')
 pkmemberid=$(echo $tmp | jq -r '.data.user.memberNo')
 pktoken=$(echo $tmp | jq -r '.data.token')
 curl -sk -X POST -H "Host: $url" -H "content-type: application/json; charset=utf-8" -H "channel: 1" -H "token: $pktoken" -d '{"memberId":"'$pkcode'","memberID":"'$pkmemberid'","mobile":"'$phone'","token":"'$pkt'","vin":"","safeEnc":'$(($(date '+%s%3N')-$safe))'}' "https://$url/ehomes-new/pkHome/api/bonus/signActivity2nd" | jq -r '.data.integral'
+fi
 tmp=$(curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Host: $url" -H "app-key: $appkey" -d '{"password":"'$pass'","version_name":"7.4.9","version_auth":"l8szUT88Wl9U90WxUw/exQ==","device_id":"isAppMarket","device_model":"OnePlusPJE110","ip":"","name":"'$phone'","version_code":"342","deviceSystemVersion":"14","device_type":"0"}' "https://$url/ehomes-new/homeManager/getLoginMember")
+if [[ "$tmp" == *"密码错误"* ]]; then
+echo "$phone福田e家登录失败"
+else
 code=$(echo $tmp | jq -r '.data.memberComplexCode')
 uid=$(echo $tmp | jq -r '.data.uid')
 memberid=$(echo $tmp | jq -r '.data.memberID')
 auth=$(echo $tmp | jq -r '.data.auth')
+ticket=$(echo $tmp | jq -r '.data.ticketValue')
 res=$(curl -sk -X POST -H "encrypt: yes" -H "Content-Type: application/x-www-form-urlencoded" -H "Host: $url" -d "jsonParame=$(echo -n '{"limit":{"auth":"'$auth'","uid":"'$uid'","userType":"61"},"param":{"deviceType":"1","version":"7.5.1","versionCode":"345"}}' | openssl enc -des-ede3-cbc -K "$hexkey" -iv "$hexiv" -base64 | tr -d '\n' | python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip()))')" "https://$url/est/getVersion.action" | tr -d '\n' | sed 's/[[:space:]]//g')
 safe=$(python ftde.py --ciphertext $res | jq -r '.data' | jq -r '.safeKey')
 content=$(curl -sk http://ililil.cn:88/api/yy.php | awk -F "," '{print $2}')
@@ -61,7 +69,9 @@ tzid=$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: 
 sleep $((RANDOM % 60))
 curl -sk -X POST  -H "host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/bonus/signActivity2nd" | jq -r '.data.integral'
 sleep $((RANDOM % 60))
-curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Host: $url" -H "app-key: $appkey" -d '{"safeEnc":'$(($(date '+%s%3N')-$safe))',"activity":"","tel":"'$phone'","id":"33","source":"APP","memberId":"'$code'"}' "https://$url/ehomes-new/homeManager/api/bonus/addIntegralForShare" | jq -r '.data.integral'
+fxsafe=$(curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d "" "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/ehomesService//api/safeH5/getSafeInfo" | jq -r '.data.key')
+curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d '{"memberId": "'$code'","tel": "'$phone'","id": "33","safeEnc": "'$(($(date '+%s%3N')-$fxsafe))'","userId": null}' "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/homeManager//api/bonus/addIntegralForShare" | jq -r '.data.integral'
+#curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Host: $url" -H "app-key: $appkey" -d '{"safeEnc":'$(($(date '+%s%3N')-$safe))',"activity":"","tel":"'$phone'","id":"33","source":"APP","memberId":"'$code'"}' "https://$url/ehomes-new/homeManager/api/bonus/addIntegralForShare" | jq -r '.data.integral'
 sleep $((RANDOM % 60))
 gzid=$((RANDOM + 8010000))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"behavior":"1","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
@@ -71,5 +81,6 @@ sleep $((RANDOM % 6))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"postId":'$tzid'}' "https://$url/ehomes-new/ehomesCommunity/api/mine/delete" >/dev/null
 sleep $((RANDOM % 6))
 echo "帐号$phone福田e家目前积分$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/Member/findMemberPointsInfo" | jq -r '.data.pointValue')"
+fi
 echo "############"
 done
