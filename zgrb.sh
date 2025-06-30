@@ -18,7 +18,7 @@ for s in $(seq 0 1 $((${#zh[@]}-1)))
 do
 openid=$(echo "${zh[$s]}" | awk -F "@" '{print $1}')
 device=$(echo "${zh[$s]}" | awk -F "@" '{print $2}')
-ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"285","appVersion":"6.23.12"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"23049RAD8C","osType":"android","osVersion":"13","romType":"2","romVersion":"0"},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | sed 's/\n//g' | sed 's/ //g' | grep "Authorization" | awk -F ":" '{print $2}' | awk -F ";" '{print $1}')
+ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"306","appVersion":"6.26.0"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"PJZ110","osType":"android","osVersion":"15","romType":"7","romVersion":""},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | sed 's/\n//g' | sed 's/ //g' | grep "Authorization" | awk -F ":" '{print $2}' | awk -F ";" '{print $1}')
 rm -rf zgrb.log
 echo "........中国人保账号$s........"
 state=$(curl -sk -X POST -H "Host: mp.picclife.cn" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "x-app-score-channel: picc-app001" -H "Content-Type: application/json;charset=UTF-8" -d "{}" "https://mp.picclife.cn/dop/scoremall/score/internal/scoreAccount/queryMyScoreAccount" | jq -r '.result' | grep -oP 'state=\K[^&]+')
