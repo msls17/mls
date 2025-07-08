@@ -1,6 +1,6 @@
 # new Env('福田e家');
 #by-莫老师，版本1.6
-#青龙创建变量ftej，值为账号@密码，100积分等于1元，平均一天约100分
+#青龙创建变量ftej，值为账号@密码，100积分等于1元，平均一天约40分
 #cron:10 1 * * *
 zh=($(echo $ftej | sed 's/&/ /g'))
 appkey=7918d2d1a92a02cbc577adb8d570601e72d3b640
@@ -69,15 +69,15 @@ tzid=$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: 
 sleep $((RANDOM % 60))
 curl -sk -X POST  -H "host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/bonus/signActivity2nd" | jq -r '.data.integral'
 sleep $((RANDOM % 60))
-fxsafe=$(curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d "" "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/ehomesService//api/safeH5/getSafeInfo" | jq -r '.data.key')
-curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d '{"memberId": "'$code'","tel": "'$phone'","id": "33","safeEnc": "'$(($(date '+%s%3N')-$fxsafe))'","userId": null}' "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/homeManager//api/bonus/addIntegralForShare" | jq -r '.data.integral'
+#fxsafe=$(curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d "" "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/ehomesService//api/safeH5/getSafeInfo" | jq -r '.data.key')
+#curl -sk -X POST -H "Host: finance.foton.com.cn" -H "Cookie: FOTONTGT=$ticket" -H "Content-Type: application/json;charset=UTF-8" -d '{"memberId": "'$code'","tel": "'$phone'","id": "33","safeEnc": "'$(($(date '+%s%3N')-$fxsafe))'","userId": null}' "https://finance.foton.com.cn/FONTON_PROD/ehomes-new/homeManager//api/bonus/addIntegralForShare" | jq -r '.data.integral'
 #curl -sk -X POST -H "Content-Type: application/json;charset=utf-8" -H "Host: $url" -H "app-key: $appkey" -d '{"safeEnc":'$(($(date '+%s%3N')-$safe))',"activity":"","tel":"'$phone'","id":"33","source":"APP","memberId":"'$code'"}' "https://$url/ehomes-new/homeManager/api/bonus/addIntegralForShare" | jq -r '.data.integral'
-sleep $((RANDOM % 60))
-gzid=$((RANDOM + 8010000))
-curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"behavior":"1","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
-sleep $((RANDOM % 6))
-curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"behavior":"2","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
-sleep $((RANDOM % 6))
+#sleep $((RANDOM % 60))
+#gzid=$((RANDOM + 8010000))
+#curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"behavior":"1","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
+#sleep $((RANDOM % 6))
+#curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$code'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"behavior":"2","memberIdeds":"'$gzid'","navyId":"null"}' "https://$url/ehomes-new/ehomesCommunity/api/post/follow2nd" >/dev/null
+#sleep $((RANDOM % 6))
 curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1,"postId":'$tzid'}' "https://$url/ehomes-new/ehomesCommunity/api/mine/delete" >/dev/null
 sleep $((RANDOM % 6))
 echo "帐号$phone福田e家目前积分$(curl -sk -X POST -H "Host: $url" -H "app-key: $appkey" -H "content-type: application/json; charset=utf-8" -H "app-token: $ftapptoken" -d '{"memberId":"'$memberid'","userId":"'$uid'","userType":"61","uid":"'$uid'","mobile":"'$phone'","tel":"'$phone'","phone":"'$phone'","brandName":"","seriesName":"","token":"'$token'","safeEnc":'$(($(date '+%s%3N')-$safe))',"businessId":1}' "https://$url/ehomes-new/homeManager/api/Member/findMemberPointsInfo" | jq -r '.data.pointValue')"
