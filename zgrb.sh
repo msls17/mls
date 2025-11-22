@@ -1,10 +1,9 @@
 # new Env('中国人保');
-#by-莫老师，版本2.2
+#by-莫老师，版本2.3
 #cron:5 1 * * *
 #打开https://e.picc.com/piccapp/install/register.html?app=1&uuIdFlag=2a05f9fa-8下载app，然后用微信登陆抓包，抓thirdPartyId和deviceid的值，青龙设置变量名zgrbck，值为thirdPartyId@deviceid。一次抓包永久有效
 url=zgrb.epicc.com.cn
 url2=dop.picc.com.cn
-url3=piccapp-2024khj.maxrocky.com
 zh=($(echo $zgrbck | sed 's/&/ /g'))
 getsign(){
 time=$(date '+%s%3N')
@@ -14,23 +13,19 @@ hqsign(){
 time=$(date '+%s%3N')
 sign=$(echo -n ''$time'##$#gsgs123232' | md5sum | awk '{print $1}')
 }
-for s in $(seq 0 1 $((${#zh[@]}-1)))
-do
-openid=$(echo "${zh[$s]}" | awk -F "@" '{print $1}')
-device=$(echo "${zh[$s]}" | awk -F "@" '{print $2}')
-ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"306","appVersion":"6.26.0"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"PJZ110","osType":"android","osVersion":"15","romType":"7","romVersion":""},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | sed 's/\n//g' | sed 's/ //g' | grep "Authorization" | awk -F ":" '{print $2}' | awk -F ";" '{print $1}')
+for s in "${!zh[@]}"; do
+IFS='@' read -r openid device <<< "${zh[$s]}"
+ck=$(curl -sik -X POST -H "Content-Type: application/json; charset=UTF-8" -H "Host: $url" -d '{"body":{"signInType":"0","thirdPartyId":"'$openid'"},"head":{"accessToken":"","adCode":"350100","appInfo":{"appBuild":"323","appVersion":"6.27.6"},"deviceInfo":{"deviceId":"'$device'","deviceModel":"M2102J2SC","osType":"android","osVersion":"13","romType":"2","romVersion":"0"},"tags":{"tags":[],"tagsLogin":[]},"token":"","userId":""},"uuid":"'$uuidgen'"}' "https://$url/G-BASE/a/user/login/thirdPartyLogin/v1" | grep -i "^Authorization:" | sed 's/^Authorization: //i')
 rm -rf zgrb.log
 echo "........中国人保账号$s........"
 state=$(curl -sk -X POST -H "Host: mp.picclife.cn" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "x-app-score-channel: picc-app001" -H "Content-Type: application/json;charset=UTF-8" -d "{}" "https://mp.picclife.cn/dop/scoremall/score/internal/scoreAccount/queryMyScoreAccount" | jq -r '.result' | grep -oP 'state=\K[^&]+')
-tmp=$(curl -sik -X GET -H "Host: piccapp.picc.com.cn" -H "Cookie: w_a_t=$ck" "https://piccapp.picc.com.cn/G-OPEN/oauth2/authorize/v1?client_id=7nbv5z4zS86jhGDCt5XuwfWI&scope=auth_user&response_type=code&state=$state&redirect_uri=https%3A%2F%2Fdop.picc.com.cn%2Fdop%2Fscoremall%2Fuser%2FappLoginCallback%3FafterLoginRedirectUrl%3Dhttps%2525253A%2525252F%2525252Fmp.picclife.cn%2525252Fdop%2525252Fscoremall%2525252Fmall%2525252F%25252523%2525252Fhome%2525253Fapply%2525253Dapp")
-lj=$(echo "$tmp" | grep "Location" | awk -F " " '{print $2}')
-if [ -z "$lj" ]; then
+tmp=$(curl -L -sik -X GET -H "Host: piccapp.picc.com.cn" -H "Cookie: w_a_t=$ck" "https://piccapp.picc.com.cn/G-OPEN/oauth2/authorize/v1?client_id=7nbv5z4zS86jhGDCt5XuwfWI&scope=auth_user&response_type=code&state=$state&redirect_uri=https%3A%2F%2Fdop.picc.com.cn%2Fdop%2Fscoremall%2Fuser%2FappLoginCallback%3FafterLoginRedirectUrl%3Dhttps%2525253A%2525252F%2525252Fmp.picclife.cn%2525252Fdop%2525252Fscoremall%2525252Fmall%2525252F%25252523%2525252Fhome%2525253Fapply%2525253Dapp")
+token=$(echo "$tmp" | grep -oP 'app-token=\K[^;]+' | head -1)
+if [ -z ''$token'' ]; then
 uuid=$(echo "$tmp" | grep -oP 'id="uuid" name="uuid" value="\K[^"]+')
 res=$(echo "$tmp" | grep -oP 'id="redirectUri" name="scope" value="\K[^"]+' | sed 's/amp;//g')
 curl -sk -X POST -H "Host: piccapp.picc.com.cn" -H "Authorization: $ck" -H "content-type: application/json" -d '{"head":{"clientId":"7nbv5z4zS86jhGDCt5XuwfWI","uuid":"'$uuid'","redirectUri":"'$res'"},"body":{}}' "https://piccapp.picc.com.cn/G-OPEN/oauth2/getAgree" | jq -r '.message'
-lj=$(curl -sik -X GET -H "Host: piccapp.picc.com.cn" -H "Cookie: w_a_t=$ck" "https://piccapp.picc.com.cn/G-OPEN/oauth2/agree/v1?client_id=7nbv5z4zS86jhGDCt5XuwfWI&redirectUri=$res&scope=auth_user&uuid=$uuid" | grep "Location" | awk -F " " '{print $2}')
-else
-token=$(curl -sik -X GET -H "Host: $url2" "$lj" | grep "app-token" | awk -F "app-token=" '{print $2}' | awk -F ";" '{print $1}')
+token=$(curl -L -sik -X GET -H "Host: piccapp.picc.com.cn" -H "Cookie: w_a_t=$ck" "https://piccapp.picc.com.cn/G-OPEN/oauth2/agree/v1?client_id=7nbv5z4zS86jhGDCt5XuwfWI&redirectUri=$res&scope=auth_user&uuid=$uuid" | grep -oP 'app-token=\K[^;]+' | head -1)
 fi
 if [ -z "$token" ]; then
 echo "账号$s登录签到有礼失败，可能是没有人脸认证，请打开app进行实名认证"
