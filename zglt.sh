@@ -32,10 +32,19 @@ tmp=$(curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Content-type: applicati
 ids=($(echo ''$tmp'' | jq -r '.data[].detailList.[].id'))
 products=($(echo ''$tmp'' | jq -r '.data[].detailList.[].productCode'))
 names=($(echo ''$tmp'' | jq -r '.data[].detailList.[].productName'))
+for q in "${!tokens[@]}"; do
+IFS='@' read -r mobile pass token <<< "${tokens[$q]}"
+curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Content-type: application/json" -H "Authorization: Bearer ${qycstoken[$q]}" -d '{"mobile":"'$mobile'","id":'${ids[0]}',"activityId":"YOUCHOICEONE"}' "https://backward.bol.wo.cn/prod-api/promotion/activity/roll/unlock/surpriseInterest?yGdtco4r=0osjbNqEqWHQw1zqDqibH3bi6qE7NN6fZpmf0xnH9BbcLYAY9eC7F5m0987FP0zcZOvW_crKDhgmGkAYLSXQYOvuiK69pvlSNFhhknqtbYCebFZMQVXDnOK4TgeOB0P0eCgkrnb3d21fUkbZESctdDju55xOR1Wx67Z0SRKvp_YHS4FeJuaaHz16Vu3fGHVoBR.Yw6q_yRj.Poki.cQ3IThgWGbbv.GZ1H9fKc44fbjJUgtUqzBwYGCIbn8C62VX4LcNgyT4E4Ec7Itsb.KDt7QZbHxqQ5JWTfPPVtKk0lqpwerv55LdZYo3RGxEz6z3oW41QFjEXel8Qa6pPdvTMaHlKcrzAZ.dLX3ueAQFntqpQnKyiZhmy9ejJSGD5TSa1Y1ome8nvU_QKYDWcOoU5i_5a3yOCVnDxAF5SWlmkOvuF2BqvPu4JnXPh25cgEGPs7iGn_f3KIIKRLHPTga028cfBx2uQWw9haWNj04txWTfHW.9077j7vJRcL.4eXhAbKVJMgIOlvc41wFTS59M8P2lWpzTCkx.RNA"
+done
+sm=$(($(date -d "10:00:00" +%s) - $(date +%s)))
+echo "稍等$sm秒"
+sleep $sm
 for s in "${!tokens[@]}"; do
 IFS='@' read -r mobile pass token <<< "${tokens[$s]}"
 for x in "${!ids[@]}"; do
+{
 curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Content-type: application/json" -H "Authorization: Bearer ${qycstoken[$s]}" -d '{"channelId":null,"activityId":11,"productId":'${ids[$x]}',"productCode":"'{$products[$x]}'","currentTime":"'$(date +%Y-%-m-%-d)'","accountType":"4"}' "https://backward.bol.wo.cn/prod-api/promotion/activity/roll/receiveRights?yGdtco4r=0LGXsJqEqWWQ1awfQK34bXXdre_PCXRyidxOKSjnb57h7bHwAxBGfsbqxm8exiDI2kR.OSO.4_gmGacXYqumWRTJU8EWi8gZXMrbWPB8nPvvoegkpGtZHCoIgmLuPKwxVNeWos.Opxl793B5R_cDOSfN7MVeTbJaPja5JIoU_dmQ1cR8oK88r2BrYyIFFZ_MHodIPFgHCQ8rI85X432JR2Q3ivW.Cy_CWTXvxFXT94w5uQ_Mcw0Bzjeb07ymgpe5dWkn.dMfLtHlCbDmnN8t0dWfhdmggN.7PySqZ5rbI_PxPuvSQAD8IIn5ZvN_cIfz8xnhe_Aqj9Wb9.KbTqQk3I.xKE9H7HvLuo93kSDoO.a5rnPZwYP8Sg0svSl69piwJb_G4ayNFsEADX0LUzY8e4xV_WVNAIwTHo7Xn6iaJPofZhENLBWJy5QcSToklX7N0SVhlOnRLpVND4TBM.HFjjcIs3pGFLddjLIUlk4LTF9vtDG0n1dClO7zu_uZMtiK5cNd.hhlRVzytJ9T7DtwsElRIrW_H9iocja" | jq -r '.msg'
+}&
 done
 done
 }
@@ -114,7 +123,4 @@ done
 appqd
 cj
 fi
-sm=$(($(date -d "09:59:59" +%s) - $(date +%s)))
-echo "稍等$sm秒"
-sleep $sm
 rush
