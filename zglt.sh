@@ -28,6 +28,7 @@ login
 fi
 }
 rush(){
+unset all_proxy
 tmp=$(curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Content-type: application/json" -H "Authorization: Bearer ${qycstoken[0]}" -d '{"majorId":3,"subCodeList":["YOUCHOICEONE"],"currentTime":"'$(date +%Y-%-m-%-d)'","withUserStatus":1}' "https://backward.bol.wo.cn/prod-api/promotion/activity/roll/getActivitiesDetail?yGdtco4r=0IBed6GEqWJYyFa3zh3XQf8dzF3NdvdfrwSR1yaVIpxYehLewmhR8EHD2jANwdKqrV7y2W.TiI3mGC1BgeNPtOGADw0yQE.MmQcO.xSVxK5i4esBxeYYEGd3HTw6Uu5l2K3BK6Qt2N8HS3VjfknYJugdbzltdFLVb_f8EwTsMOzzwgpgv6Y2Hst6MLLwcJAVw0Jj6YnMh80vuojETo9qfjxHDGSrB9QJvXd2g0Imr0lCWQF3uyu8MmtzLpmlba2wuZm5hx0INOQODiwTQFBX16GTuG7LlwXdi9GwDOA3F854bdxO3EUrQKlEuJDrS1h8Q3LsIGrYGOlWZaazjbR_S.c8HWsL12_PalpoGuHohMWlssoyVehi9AbMtSsV2sftAgUkE1rqSTytC9a2waM2Wrea2MkZ2En.mP7x.Lp46_x8l.mpaw28uHRMKS8IKE2zJ6LmPiVmFjiPWeh4_Sycmim427Z4KGpobYDkDzjJKue4kwrBnWuOkyX3Tp4MOK2ivYgu7a0et_Xp7sn1ArX4Bf7dRi7T0Lzcbqa")
 ids=($(echo ''$tmp'' | jq -r '.data[].detailList.[].id'))
 products=($(echo ''$tmp'' | jq -r '.data[].detailList.[].productCode'))
@@ -55,8 +56,8 @@ tmp=$(curl -sk -X POST "https://backward.bol.wo.cn/prod-api/auth/marketUnicomLog
 qycstoken[$s]=$(echo "$tmp" | jq '.data.token' | sed 's/\"//g')
 fi
 }
-localip=$(curl -sk -X GET "https://ip.3322.net")
-curl -sk -X GET -H "Host: service.ipzan.com" "https://service.ipzan.com/whiteList-add?no=$no&sign=$(echo -n "$pass:$key:$(date +%s)" | openssl enc -aes-128-ecb -K "$(echo -n "$aeskey" | xxd -p)" -nosalt | xxd -p | tr -d '\n')&ip=$localip"
+#localip=$(curl -sk -X GET "https://ip.3322.net")
+#curl -sk -X GET -H "Host: service.ipzan.com" "https://service.ipzan.com/whiteList-add?no=$no&sign=$(echo -n "$pass:$key:$(date +%s)" | openssl enc -aes-128-ecb -K "$(echo -n "$aeskey" | xxd -p)" -nosalt | xxd -p | tr -d '\n')&ip=$localip"
 getip(){
 tmp=$(curl -sk -X GET "https://service.ipzan.com/core-extract?num=1&no=$no&minute=3&format=json&repeat=1&protocol=3&pool=ordinary&mode=whitelist&secret=$key")
 ip=$(echo ''$tmp'' | jq -r '.data.list[].ip')
@@ -81,9 +82,9 @@ qylogin
 num=$(curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Authorization: Bearer ${qycstoken[$s]}" -d "" "https://backward.bol.wo.cn/prod-api/promotion/home/raffleActivity/getUserRaffleCount?yGdtco4r=0d_cINGEqWiIlnHQkS15F8BrZkdOE.GAMGVsUXeS1p8.PGs1.DejSqtWJITeW2ClV3l6z2abPVEmaUizUh.IyjFtLCn0SHJNvxeZj450ehQxfQPnXpI6.ShPV9a3hfvdJe9Gw9JTrnzDjYjai2WU0DvFczrsjeDVi5G0_LcSW1kjS_LMrNLmc2jQSQm6PH6T.hOcUf.Iukhi9TSO2A8lcR3LQ9XB0sX0SeSSUq_FJU6f8T93jgC.gQnA24en64Uz6VG7QKKf5tLdYXSAEuQXnm24cSAlNFGlgwZuBFPE2dB1CXgOexgYr8J4m4Cs5PDkjWvr0VGw4eXuzXC2W1JvYwbehO07Y_bQvs5NpyuXSdcoAZBl6NznoCmmnNdIReFZbqg1GH2xvQdMtOeNRCymNLHISW5sybfRTrET9436jnnW.PC2q6J8arHkM7dA2iIzFD1EEciFD04_9E0I4bxFkpZfzByY9F_eWvE2nKge5xkKX_vWG.1wICJr4fTVbnZyfmbWaWgc1Cnst4uUHy3KWBByI1C38iVTr_T_lmaO3yiLsVLA4ILxk9KQ" | jq '.data')
 echo "$mobile获得$num次抽奖次数，开始抽奖"
 for i in $(seq $num); do
-if [ $((count % 15)) -eq 0 ]; then
-getip
-fi
+#if [ $((count % 15)) -eq 0 ]; then
+#getip
+#fi
 tmp=$(curl -sk -X POST -H "Host: backward.bol.wo.cn" -H "Authorization: Bearer ${qycstoken[$s]}" -d "" "https://backward.bol.wo.cn/prod-api/promotion/home/raffleActivity/userRaffle?yGdtco4r=0xw7jwGEqWljEGt2ANu_NAJ97mYKiQ.nAMIxnrGTRttR07V7bNk5BY236SgGjgiilh0_4elJgOgmaA.HEMXeg1Zp8hovSf.nfzOJUbYGTHoxZrDhRp92KAZPtvYcUmJy6bREzZ9WqY.f2VkfQo7qJbX6WYjXP5q9g9gH5t3kRKCoT3Sx6c0Kwu6d5bIyt_6IIDl_dD0P60MxNLZFRMTIPyGcm70oirbNfbuIxVZATKKxmMNAqIRxnxS6SINKLel4UoKTSM_owT7Dk1jPDbTs2nLavAfDzQ2NylBB6tYtmqaZgdTVjiUd3mdJ5eJQM.p4Ifu54c49Ut7ov.MoQQkzd5qLHRxAHIU50s1cUY4rkMSV3DhhejGVV3uUGe9QcezxJUmmXQn3W3IfGganHgGyotzYgH8pKvlVpsKfyGGZYh8Ve8SHhNYB1jZ1lJ8cA6abrGZnyiwRjARM6US5Yzn0HRyx6bGRXZ6_IX9I0eOvl_7H7SzQdnaC97jOI8ikZBlguw.EIh9GXAGnn_8po2nJVI0NmxvqXXe9laXlUyRn4_HuQ4YGfDn.pXkZ")
 recordId=$(echo "$tmp" | jq '.data.lotteryRecordId')
 if [ "$recordId" = "0" ]; then
