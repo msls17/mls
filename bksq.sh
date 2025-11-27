@@ -3,6 +3,7 @@
 #青龙创建变量bksq，值为用户名@登录密码
 #cron:5 0 * * *
 zh=($(echo $bksq | sed 's/&/ /g'))
+IFS='@' read -r pzphone pass aeskey no key <<< "$pinz"
 localip=$(curl -sk -X GET "https://ip.3322.net")
 curl -sk -X GET -H "Host: service.ipzan.com" "https://service.ipzan.com/whiteList-add?no=$no&sign=$(echo -n "$pass:$key:$(date +%s)" | openssl enc -aes-128-ecb -K "$(echo -n "$aeskey" | xxd -p)" -nosalt | xxd -p | tr -d '\n')&ip=$localip" | jq -r '.data'
 getip(){
