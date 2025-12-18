@@ -3,6 +3,7 @@
 #青龙创建变量bksq，值为用户名@登录密码
 #cron:5 0 * * *
 zh=($(echo $bksq | sed 's/&/ /g'))
+url=bk020.top
 IFS='@' read -r pzphone pass aeskey no key <<< "$pinz"
 localip=$(curl -sk -X GET "https://ip.3322.net")
 curl -sk -X GET -H "Host: service.ipzan.com" "https://service.ipzan.com/whiteList-add?no=$no&sign=$(echo -n "$pass:$key:$(date +%s)" | openssl enc -aes-128-ecb -K "$(echo -n "$aeskey" | xxd -p)" -nosalt | xxd -p | tr -d '\n')&ip=$localip" | jq -r '.data'
@@ -27,7 +28,7 @@ sleep $((60 + RANDOM % 60))
 unset all_proxy
 getip
 IFS='@' read -r user pass <<< "${zh[$s]}"
-token=$(curl -sik -X POST -H "Host: bk020.top" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "x-requested-with: XMLHttpRequest" -H "user-agent: Mozilla/5.0 (Linux; Android 13; M2102J2SC Build/TKQ1.221114.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36" -d "email=$user&password=$(echo -n "$pass" | md5sum | awk '{print $1}')" "https://bk020.top/user-login.htm" | grep 'bbs_token=' | grep -v 'bbs_token=deleted' | sed -E 's/.*bbs_token=([^;]+);.*/\1/')
+token=$(curl -sik -X POST -H "Host: $url" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "x-requested-with: XMLHttpRequest" -H "user-agent: Mozilla/5.0 (Linux; Android 13; M2102J2SC Build/TKQ1.221114.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36" -d "email=$user&password=$(echo -n "$pass" | md5sum | awk '{print $1}')" "https://$url/user-login.htm" | grep 'bbs_token=' | grep -v 'bbs_token=deleted' | sed -E 's/.*bbs_token=([^;]+);.*/\1/')
 sleep $((10 + RANDOM % 60))
-curl -sk -X POST -H "Host: bk020.top" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "x-requested-with: XMLHttpRequest" -H "user-agent: Mozilla/5.0 (Linux; Android 13; M2102J2SC Build/TKQ1.221114.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36" -H "cookie: bbs_token=$token" -d "action=check" "https://bk020.top/sg_sign-list_today.htm"
+curl -sk -X POST -H "Host: $url" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "x-requested-with: XMLHttpRequest" -H "user-agent: Mozilla/5.0 (Linux; Android 13; M2102J2SC Build/TKQ1.221114.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36" -H "cookie: bbs_token=$token" -d "action=check" "https://$url/sg_sign-list_today.htm"
 done
