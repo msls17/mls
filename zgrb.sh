@@ -43,7 +43,7 @@ gqjf=$(jq -r '.result.willExpiredWeekly' <<< "$tmp")
 cjcs=$(( (gqjf + 99) / 100 ))
 echo "账号$s当前积分$nowjf，本周内将过期积分$gqjf，将使用过期积分抽奖$cjcs次"
 for ((c=1; c<=cjcs; c++));do
-jg=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d '{"drawType":0}' "https://$url2/dop/scoremall/coupon/blindBox/draw" | jq -r '.result.blindBoxGoodsVO.productName')
+jg=$(curl -sk -X POST -H "Host: $url2" -H "x-app-auth-type: APP" -H "x-app-score-platform: picc-app" -H "Content-Type: application/json;charset=UTF-8" -H "x-app-score-channel: picc-app001" -H "x-app-auth-token: $token" -d '{"drawType":1}' "https://$url2/dop/scoremall/coupon/blindBox/draw" | jq -r '.result.blindBoxGoodsVO.productName')
 echo "第$c次抽奖$jg"
 done
 fi
